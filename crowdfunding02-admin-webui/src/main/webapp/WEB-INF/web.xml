@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns="http://xmlns.jcp.org/xml/ns/javaee"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_4_0.xsd"
+         version="4.0">
+
+    <listener>
+        <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+    </listener>
+    <context-param>
+        <param-name>contextConfigLocation</param-name>
+        <param-value>classpath:spring-persist-mybatis.xml,classpath:spring-persist-tx.xml,classpath:spring-activity.xml</param-value>
+    </context-param>
+
+
+    <!-- 前端控制器 -->
+    <servlet>
+        <servlet-name>dispatcherServlet</servlet-name>
+        <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+        <!-- Servlet默认声明周期中，创建对象是在第一次接收到请求时 -->
+        <!-- 而DispatcherServlet创建对象后有大量的“框架初始化工作”，不适合在第一次请求是来做，
+            设置load-on-startup 就是为了让DispatcherServlet在Web应用启动时创建对象、初始化
+        -->
+        <init-param>
+            <param-name>contextConfigLocation</param-name>
+            <param-value>classpath:spring-web-mvc.xml,classpath:spring-persist-mybatis.xml,classpath:spring-persist-tx.xml,classpath:spring-activity.xml</param-value>
+           <!-- <param-value>classpath:spring-*.xml</param-value>-->
+        </init-param>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>dispatcherServlet</servlet-name>
+        <!--
+            url-pattern配置方式二：配置请求扩展名
+                优点1：静态资源完全不经过SpringMVC，不需要特殊处理
+                优点2：可以实现伪静态效果。表面看起来是访问一个HTML文件这样的静态资源，但实际上是经过Java代码运算
+                    伪静态作用：给黑客入侵增加难度、有利于SEO优化（让百度、谷歌这样的搜索引擎容易找到我们的项目）
+                缺点：不符合RESTFul风格
+        -->
+        <url-pattern>/</url-pattern>
+        <url-pattern>*.html</url-pattern>
+        <!-- 如果一个AJax请求扩展名是html，但实际服务器给浏览器返回的是Json数据，二者不匹配，就会报406-->
+        <url-pattern>*.json</url-pattern>
+
+    </servlet-mapping>
+
+    <!-- 开启字符编码过滤器 -->
+    <filter>
+        <filter-name>characterEncodingFilter</filter-name>
+        <filter-class>org.springframework.web.filter.CharacterEncodingFilter</filter-class>
+        <!-- 指定字符集 -->
+        <init-param>
+            <param-name>encoding</param-name>
+            <param-value>utf-8</param-value>
+        </init-param>
+        <!-- 强制请求设置字符集 -->
+        <init-param>
+            <param-name>forceRequestEncoding</param-name>
+            <param-value>true</param-value>
+        </init-param>
+        <!-- 强制请求设置字符集 -->
+        <init-param>
+            <param-name>forceResponseEncoding</param-name>
+            <param-value>true</param-value>
+        </init-param>
+    </filter>
+    <filter-mapping>
+        <filter-name>characterEncodingFilter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+
+    <filter>
+        <filter-name>hiddenHttpMethodFilter</filter-name>
+        <filter-class>org.springframework.web.filter.HiddenHttpMethodFilter</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>hiddenHttpMethodFilter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+
+
+    <filter>
+        <filter-name>springSecurityFilterChain</filter-name>
+        <filter-class>com.atcpl.crowd.org.springframework.web.filter.DelegatingFilterProxy</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>springSecurityFilterChain</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+
+
+</web-app>

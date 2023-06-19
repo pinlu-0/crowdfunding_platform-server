@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.3.xsd
+		http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-4.3.xsd">
+    <!-- 注解扫描 -->
+    <context:component-scan base-package="com.atcpl.crowd.mvc"></context:component-scan>
+    <!-- 试图解析器 -->
+    <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+        <property name="prefix" value="/WEB-INF/views/"></property>
+        <property name="suffix" value=".jsp"></property>
+    </bean>
+    <!-- 注解驱动 （标配） -->
+    <mvc:annotation-driven/>
+    <mvc:default-servlet-handler/>
+
+    <!-- 来到登录页 -->
+    <mvc:view-controller path="/admin/to/login/page.html" view-name="admin-login"/>
+    <!-- 注册页面 -->
+    <mvc:view-controller path="/admin/to/register/page.html" view-name="admin-register"/>
+    <!-- 来到忘记密码页面 -->
+    <mvc:view-controller path="/admin/to/forget/password.html" view-name="forget-password"/>
+    <!-- 来到重置密码页面 -->
+    <mvc:view-controller path="/admin/to/reset/password.html" view-name="reset-password"/>
+    <!-- 来到主页面 -->
+    <mvc:view-controller path="/admin/to/main/page.html" view-name="admin-main"/>
+    <!-- 来到新增admin页面 -->
+    <mvc:view-controller path="/admin/to/add/page.html" view-name="admin-add"/>
+    <!-- 来到角色维护页面 -->
+    <mvc:view-controller path="/role/to/page.html" view-name="role-page"/>
+    <!-- 来到菜单维护页面 -->
+    <mvc:view-controller path="/menu/to/page.html" view-name="menu-page"/>
+    <!-- 来到实名认证页面 -->
+    <!--<mvc:view-controller path="/audi/auth_cert.html" view-name="auth_cert"/>-->
+    <!-- 来到广告审核页面 -->
+    <mvc:view-controller path="/audi/auth_adv.html" view-name="auth_adv"/>
+    <!-- 来带项目审核页面 -->
+    <mvc:view-controller path="/audi/auth_project.html" view-name="auth_project"/>
+    <!-- 来到广告管理页面 -->
+    <mvc:view-controller path="/advertise/to/getAllAdvertise.html" view-name="advertise"/>
+
+
+    <bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+        <property name="defaultEncoding" value="UTF-8"></property>
+        <property name="maxUploadSize" value="10240000"></property>
+    </bean>
+
+    <!-- 基于XML的异常映射处理机制-->
+    <bean id="mappingExceptionResolver" class="org.springframework.web.servlet.handler.SimpleMappingExceptionResolver">
+        <!-- 配置异常类型和具体视图页面的对应关系 -->
+        <property name="exceptionMappings">
+            <props>
+                <!-- key属性指定异常全类名 -->
+                <!--标签体中写对应的视图（这个值要拼前后缀得到具体路径）-->
+                <prop key="java.lang.Exception">system-error</prop>
+            </props>
+        </property>
+    </bean>
+</beans>

@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+    <!-- ########################### Spring 整合 事务############################## -->
+
+    <!-- 配置自动扫描包 -->
+    <context:component-scan base-package="com.atcpl.crowd.service"/>
+
+    <!-- 配置事务管理器 -->
+    <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <property name="dataSource" ref="dataSource"></property>
+    </bean>
+
+    <!-- 配置事务切面 -->
+    <aop:config>
+        <!-- 配置切入点 -->
+        <!-- 考虑到后面整合SpringSecurity，避免把UserDetailsService加入事务控制，让切入点表达式定位到ServiceImpl-->
+        <aop:pointcut id="pointCut" expression="execution(* *..*ServiceImpl.*(..))"/>
+        <!-- 将切入点表达式和事务通知关联起来 -->
+        <aop:advisor advice-ref="txAdvice" pointcut-ref="pointCut"/>
+    </aop:config>
+
+    <!-- 配置事务通知 -->
+    <tx:advice id="txAdvice">
+        <!-- 配置事务属性 -->
+        <tx:attributes>
+            <!-- 指定哪种规则的方法上面添加事务 -->
+            <!-- 查询方法：配置只读属性，让数据库知道这是一查询操作，能够进行一定优化 -->
+            <tx:method name="get*" read-only="true"/>
+            <tx:method name="query*" read-only="true"/>
+            <tx:method name="find*" read-only="true"/>
+            <tx:method name="count*" read-only="true"/>
+
+            <!-- 增删改方法：配置事务传播行为、回滚异常-->
+            <!--
+             REQUIRED：默认值，表示当前方法必须工作在事务中，如果当前线程上没有已经开启的事务，则自己新开事务，如果有一开事务，就加入已有事务。
+                顾虑：用别人的事务，有可能被回滚。
+             REQUIRES_NEW：建议使用的值，不管当前线程上有没有事务，都要自己开启事务，并在自己的事务上运行。
+                优点：不会受其他事务的影响。
+             -->
+            <tx:method name="save*" propagation="REQUIRES_NEW" rollback-for="java.lang.Exception"/>
+            <tx:method name="update*" propagation="REQUIRES_NEW" rollback-for="java.lang.Exception"/>
+            <tx:method name="remove*" propagation="REQUIRES_NEW" rollback-for="java.lang.Exception"/>
+            <tx:method name="batch*" propagation="REQUIRES_NEW" rollback-for="java.lang.Exception"/>
+
+            <!-- 注意： 如果没有配置的前缀方法，那么事务对这个方法无效-->
+        </tx:attributes>
+    </tx:advice>
+
+    <!-- 将BCryptPasswordEncoder装配入IOC容器 -->
+    <bean class="org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder" id="bCryptPasswordEncoder"/>
+
+
+</beans>
