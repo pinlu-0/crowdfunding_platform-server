@@ -65,11 +65,11 @@ public class AdvertiseHandler {
 
         // OSS对象存储参数
         OssProperties ossProperties = new OssProperties();
-        ossProperties.setAccessKeyId("LTAI5tDhoXvQ7Zk3LY9KEXh2");
-        ossProperties.setAccessKeySecret("wdMNiKoOZ4RE07KNiINkzNJljAluxz");
-        ossProperties.setBucketDoMain("atpl.oss-cn-shanghai.aliyuncs.com");
-        ossProperties.setBucketName("atpl");
-        ossProperties.setEndPoint("oss-cn-shanghai.aliyuncs.com");
+        ossProperties.setAccessKeyId("自己的AccessKeyId");
+        ossProperties.setAccessKeySecret("自己的AccessKeySecret");
+        ossProperties.setBucketDoMain("自己的BucketDoMain);
+        ossProperties.setBucketName("自己的BucketName");
+        ossProperties.setEndPoint("自己的EndPoint");
 
         // 将文件上传到OSS服务器上
         ResultEntity<String> resultEntity = CrowdUtil.uploadFileToOSS(ossProperties.getEndPoint(),
